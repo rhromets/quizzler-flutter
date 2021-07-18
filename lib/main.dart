@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quiz_brain.dart';
 
 QuizBrain quizBrain = QuizBrain();
@@ -29,6 +30,37 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
+
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getQuestionAnswer();
+
+    setState(
+      () {
+        if (userPickedAnswer == correctAnswer) {
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          scoreKeeper.add(Icon(
+            Icons.close,
+            color: Colors.red,
+          ));
+        }
+        if (quizBrain.isFinished()) {
+          scoreKeeper.length = 0;
+
+          Alert(
+                  context: context,
+                  title: "Finished!",
+                  desc: "You've reached the end of the quiz.")
+              .show();
+        } else {
+          quizBrain.nextQuestion();
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,27 +96,7 @@ class _QuizPageState extends State<QuizPage> {
               child: Text('True'),
               onPressed: () {
                 //The user picked true.
-                bool correctAnswer = quizBrain.getQuestionAnswer();
-
-                setState(
-                  () {
-                    if (correctAnswer == true) {
-                      print('User got it right');
-                      scoreKeeper.add(Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ));
-                      quizBrain.nextQuestion();
-                    } else {
-                      print('User got it wrong');
-                      scoreKeeper.add(Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ));
-                      quizBrain.nextQuestion();
-                    }
-                  },
-                );
+                checkAnswer(true);
               },
             ),
           ),
@@ -103,32 +115,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
-                bool correctAnswer = quizBrain.getQuestionAnswer();
-
-                if (correctAnswer == false) {
-                  print('User got it right');
-                } else {
-                  print('User got it wrong');
-                }
-                setState(
-                  () {
-                    if (correctAnswer == false) {
-                      print('User got it right');
-                      scoreKeeper.add(Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ));
-                      quizBrain.nextQuestion();
-                    } else {
-                      print('User got it wrong');
-                      scoreKeeper.add(Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ));
-                      quizBrain.nextQuestion();
-                    }
-                  },
-                );
+                checkAnswer(false);
               },
             ),
           ),
